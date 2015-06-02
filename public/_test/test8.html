@@ -63,7 +63,6 @@
 			
 			var aSeedBuffer = gl.createBuffer();
 		    gl.bindBuffer(gl.ARRAY_BUFFER, aSeedBuffer);
-		    var cornerIx;
 		    var vertices = [
 		    				seed,  seed,
 		    				seed,  seed,
@@ -97,7 +96,7 @@
 		  
 </head>
 	<body onload="webGLStart();" style="text-align:center;">
-		<h1>WebGL Test - Zooming</h1>
+		<h1>WebGL Test - Noise 60 FPS (fast computation)</h1>
 		<canvas id="the_canvas" style="border: none;" width="850" height="660"></canvas>
 	</body>
 </html>

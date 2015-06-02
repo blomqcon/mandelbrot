@@ -4,36 +4,28 @@
 <head>
 	<title>Mandelbrot</title>
 	
-	<script src="scripts/webgl-utils3.js"></script> 
+	<script src="scripts/webgl-utils4.js"></script> 
 	
 	<script id="shader-fs" type="x-shader/x-fragment">	
   		precision mediump float;
 
   		varying vec2 vPosition;
-  		varying vec2 vSeed;
-
-		vec2 rSeed = vPosition + vec2(1.0, 1.0) + vSeed;
-		vec2 gSeed = vPosition + vec2(2.0, 2.0) + vSeed;
-		vec2 bSeed = vPosition + vec2(3.0, 3.0) + vSeed;
-
-		float rand(vec2 co){
-    		return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-		}
+  		varying vec2 vZoom;
 
   		void main(void) {
-    		float x = vPosition.x;
-    		float y = vPosition.y;
+    		float x = vZoom.x;
+    		float y = vZoom.y;
 			
-			gl_FragColor = vec4(rand(rSeed), rand(gSeed), rand(bSeed), 1.0);
+			gl_FragColor = vec4((x + 1.0) / 2.0, 0.3, (y + 1.0) / 2.0, 1.0);
   		}
 	</script>
 	
 	<script id="shader-vs" type="x-shader/x-vertex">
   		attribute vec2 aVertexPosition;
-  		attribute vec2 aSeed;
+  		attribute vec2 aZoom;
 
   		varying vec2 vPosition;
-  		varying vec2 vSeed;
+  		varying vec2 vZoom;
 
   		void main(void) {
 			// Set the size of the point
@@ -41,7 +33,7 @@
 
     		gl_Position = vec4(aVertexPosition, 1.0, 1.0);
     		vPosition = aVertexPosition;
-			vSeed = aSeed;
+			vZoom = aZoom;
   		}
 	</script>
 	
@@ -50,9 +42,15 @@
 		var shaderProgram;
 		var aVertexPosition;
 		
-		var aSeed;
-		var seedBuffer;
-		var seed = Math.random();
+		var aZoom;
+		var zoomBuffer;
+		var flip = false;
+		var zoom = [
+			1.0,  1.0,
+			-1.0,  1.0,
+			1.0, -1.0,
+			-1.0, -1.0
+		];
 		
 		function drawScene(vertexPositionBuffer) {
 			gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -61,27 +59,50 @@
 			gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
 			gl.vertexAttribPointer(aVertexPosition, vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 			
-			var aSeedBuffer = gl.createBuffer();
-		    gl.bindBuffer(gl.ARRAY_BUFFER, aSeedBuffer);
-		    var cornerIx;
-		    var vertices = [
-		    				seed,  seed,
-		    				seed,  seed,
-		    				seed, seed,
-		    				seed, seed
-		    			];
-			seed = Math.random();
-		    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-		    gl.vertexAttribPointer(aSeed, 2, gl.FLOAT, false, 0, 0);
+			
+			var aZoomBuffer = gl.createBuffer();
+		    gl.bindBuffer(gl.ARRAY_BUFFER, aZoomBuffer);
+		    
+		    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(zoom), gl.STATIC_DRAW);
+		    gl.vertexAttribPointer(aZoom, 2, gl.FLOAT, false, 0, 0);
 			
 		
 			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 			
-			gl.deleteBuffer(aSeedBuffer);
+			gl.deleteBuffer(aZoomBuffer);
+			zoomIn();
 		    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-		    
 		}
 
+		function zoomIn() {
+			if(!flip) {
+				zoom[0] -= 0.01;
+				zoom[1] -= 0.01;
+				zoom[2] += 0.01;
+				zoom[3] -= 0.01;
+				zoom[4] -= 0.01;
+				zoom[5] += 0.01;
+				zoom[6] += 0.01;
+				zoom[7] += 0.01;
+				if(zoom[0] < 0.0) {
+					flip = true;
+				}
+			} else {
+				zoom[0] += 0.01;
+				zoom[1] += 0.01;
+				zoom[2] -= 0.01;
+				zoom[3] += 0.01;
+				zoom[4] += 0.01;
+				zoom[5] -= 0.01;
+				zoom[6] -= 0.01;
+				zoom[7] -= 0.01;
+				if(zoom[0] > 1.0) {
+					flip = false;
+				}
+			}
+			
+		}
+		
 		function webGLStart() {
 		    var canvas = document.getElementById("the_canvas");
 		    initGL(canvas);
@@ -97,7 +118,7 @@
 		  
 </head>
 	<body onload="webGLStart();" style="text-align:center;">
-		<h1>WebGL Test - Noise 60 FPS (fast computation)</h1>
+		<h1>WebGL Test - Zooming</h1>
 		<canvas id="the_canvas" style="border: none;" width="850" height="660"></canvas>
 	</body>
 </html>

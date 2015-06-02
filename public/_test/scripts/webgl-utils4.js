@@ -64,9 +64,9 @@ function initShaders(gl, shaderProgram, aVertexPosition) {
     aVertexPosition = gl.getAttribLocation(shaderProgram, "aVertexPosition");
     gl.enableVertexAttribArray(aVertexPosition);
     
-    //initilize aSeed GLSL(GPU) variable
-    aSeed = gl.getAttribLocation(shaderProgram, "aSeed");
-    gl.enableVertexAttribArray(aSeed);
+    //initilize aZoom GLSL(GPU) variable
+    aZoom = gl.getAttribLocation(shaderProgram, "aZoom");
+    gl.enableVertexAttribArray(aZoom);
 }
 
 function initVertexBuffer(gl) {
@@ -76,7 +76,7 @@ function initVertexBuffer(gl) {
 		1.0,  1.0,
 		-1.0,  1.0,
 		1.0, -1.0,
-		-1.0, -1.0
+		-1.0, -1.0,
 	];
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 	vertexPositionBuffer.itemSize = 2;

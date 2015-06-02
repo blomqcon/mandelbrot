@@ -35,19 +35,17 @@
 					break;
 				}
 			}
-			
-			if(diverge > 75) {
-				gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-			} else if(diverge > 50) {
-				gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-			} else if(diverge > 25) {
-				gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
-			} else if(diverge > 2) {
-				gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
-			} else {
+
+			//High diverge value - diverges slowly
+			//Low  diverge value - diverges quickly
+			if(diverge == 0) {
 				gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-			}
-  		}
+			} else {
+				float divergeScale = 1.0- (float(diverge) / 100.0);
+				gl_FragColor = vec4(divergeScale, divergeScale, divergeScale, 1.0);
+	  		}
+
+		}
 	</script>
 	
 	<script id="shader-vs" type="x-shader/x-vertex">

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Mandelbrot</title>
+	<script src="scripts/webgl-utils2.js"></script>
+	 
+	<script id="shader-fs" type="x-shader/x-fragment">	
+  		precision mediump float;
+
+  		varying vec2 vPosition;
+
+  		void main(void) {
+    		float x = vPosition.x;
+    		float y = vPosition.y;
+    		
+
+			gl_FragColor = vec4(abs(x)*abs(y)*1.0, abs(x)*abs(y)*2.0, x*y*10.0, 1.0);
+  		}
+	</script>
+	
+	<script id="shader-vs" type="x-shader/x-vertex">
+  		attribute vec2 aVertexPosition;
+
+  		varying vec2 vPosition;
+
+  		void main(void) {
+			// Set the size of the point
+			gl_PointSize = 1.0;
+
+    		gl_Position = vec4(aVertexPosition, 1.0, 1.0);
+    		vPosition = aVertexPosition;
+  		}
+	</script>
+	
+	<script type="text/javascript">
+		var gl;
+		var shaderProgram;
+		var aVertexPosition;
+		
+		function drawScene(vertexPositionBuffer) {
+			gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); //clears the color and depth buffers
+			
+			gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
+			gl.vertexAttribPointer(aVertexPosition, vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+			
+			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+		}
+
+		function webGLStart() {
+		    var canvas = document.getElementById("the_canvas");
+		    initGL(canvas);
+		    initShaders(gl, shaderProgram, aVertexPosition);
+		    var vertexPositionBuffer = initVertexBuffer(gl, vertexPositionBuffer);
+
+		    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+		    setInterval(function(){ drawScene(vertexPositionBuffer); }, 15);
+		}
+	</script>
+		  
+</head>
+	<body onload="webGLStart();" style="text-align:center;">
+		<h1>WebGL Test - Sections of Frame</h1>
+		<canvas id="the_canvas" style="border: none;" width="850" height="660"></canvas>
+	</body>
+</html>

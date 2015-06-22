@@ -1,51 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang='en' ng-app='MandelbrotApp'>
 
 <head>
 	<meta charset="utf-8">
+	<!--<meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no' />-->
 	<title>Mandelbrot</title>
+	
+	<!--<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">-->
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<!--<script src="scripts/bootstrap.min.js"></script> -->
 	
 	<link rel="stylesheet" type="text/css" href="css/style.css">
 	<script src="scripts/webgl-utils.js"></script>
 	<script src="scripts/mandelbrot.js"></script>
+	<script src="scripts/controls.js"></script>
 	
 	<script id="shader-fs" type="x-shader/x-fragment">	
   		precision mediump float;
 
   		varying vec2 vZoom;
 
+		vec3 hsv2rgb(vec3 c) {
+    		vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    		vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    		return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+		}
+
   		void main(void) {
     		float c_a = vZoom.x;
     		float c_b = vZoom.y;
 
-			float z_a = 0.0;
-			float z_b = 0.0;
-			float z_a_temp = 0.0;
-			float z_b_temp = 0.0;
+        float z_a = 0.0;
+        float z_b = 0.0;
+        float z_a_temp = 0.0;
+        float z_b_temp = 0.0;
 
-			int diverge = 0;
-			for(int i = 0; i < 100; i++) {
-				z_a_temp = z_a;
-				z_b_temp = z_b;
-				z_a = (z_a_temp * z_a_temp) - (z_b_temp * z_b_temp) + c_a;
-				z_b = 2.0 * (z_a_temp * z_b_temp) + c_b;
+        int diverge = 0;
+        for(int i = 0; i < 10000; i++) {
+          z_a_temp = z_a;
+          z_b_temp = z_b;
+          z_a = (z_a_temp * z_a_temp) - (z_b_temp * z_b_temp) + c_a;
+          z_b = 2.0 * (z_a_temp * z_b_temp) + c_b;
 
-				if(((z_a * z_a) + (z_b * z_b)) > 100.0) {
-					diverge = i;
-					break;
-				}
-			}
-
-			//High diverge value - diverges slowly
-			//Low  diverge value - diverges quickly
-			if(diverge == 0) {
-				gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-			} else {
-				float divergeScale = 1.0- (float(diverge) / 100.0);
-				gl_FragColor = vec4(divergeScale, divergeScale, divergeScale, 1.0);
-	  		}
-
-		}
+          if(((z_a * z_a) + (z_b * z_b)) > 10000.0) {
+            diverge = i;
+            break;
+          }
+        }
+        
+        
+        //High diverge value - diverges slowly
+        //Low  diverge value - diverges quickly
+        if(diverge == 0) {
+          gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        } else {
+			//TODO: Implement normalized iteration count algorithm for smoother colors
+          	float divergeScale = 1.0 - (float(diverge) / 900.0);
+			vec3 color = hsv2rgb(vec3(divergeScale / 0.05, 1.0, 0.9));
+         	gl_FragColor = vec4(color, 1.0);
+          }
+      }
+		
 	</script>
 	
 	<script id="shader-vs" type="x-shader/x-vertex">
@@ -55,18 +70,21 @@
   		varying vec2 vZoom;
 
   		void main(void) {
-			// Set the size of the point
-			gl_PointSize = 1.0;
-
     		gl_Position = vec4(aVertexPosition, 1.0, 1.0);
 			vZoom = aZoom;
   		}
 	</script>
 </head>
 
-<body>
+<body ng-controller="MandelbrotCtrl">
 	<h1>Mandelbrot Set</h1>
-	<canvas id="canvas" width="850" height="660"></canvas>
+	<canvas id="canvas" width="350" height="260"></canvas></br>
+	<div class="zoom-settings form-inline">
+		<label for="xCenter">X-Center: </label> <input class="form-control" id="xCenter" type="text" value="-0.5"> </br>
+		<label for="xCenter">Y-Center: </label> <input class="form-control" id="yCenter" type="text" value="0.0"> </br>
+		<label for="zoom">Zoom: &nbsp&nbsp&nbsp&nbsp</label> <input class="form-control" id="zoom" type="text" value="0.4"> </br>
+	</div>
+    <button id="update" class="btn btn-primary">Update</md-button>
 </body>
 
 </html>

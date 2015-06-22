@@ -1,0 +1,8 @@
+UI: Zoomable
+UI: Scrollable
+UI: Animation move
+UI: Set iterations
+UI: Set diverge scale hue
+
+Add: Julia set feature
+Add: Normalized iteration count algorithm 

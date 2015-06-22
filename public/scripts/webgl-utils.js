@@ -1,4 +1,8 @@
 function initGL(canvas) {
+	var canvas = document.getElementById("canvas");
+	canvas.width = window.innerWidth * .6;
+	canvas.height = window.innerHeight - 500;
+	
 	try {
 		gl = canvas.getContext("experimental-webgl");
 		gl.viewportWidth = canvas.width;

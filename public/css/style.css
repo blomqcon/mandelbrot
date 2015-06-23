@@ -3,17 +3,7 @@ body {
 }
 
 .zoom-settings {
-	margin: 0 auto;
-	width: 50%;
-	overflow: hidden;
 }
-
-.zoom-settings md-input-container {
-	text-align: center;
-	width: 33%;
-	float: left;
-}
-
 #update {
 	width: 25%;
 }

@@ -4,9 +4,11 @@ var aVertexPosition;
 var vertexPositionBuffer;
 
 var aZoom;
-var zoomBuffer;
 
-var zoom;
+var currentXCenter;
+var currentYCenter;
+var currentZoom;
+
 
 function webGLStart() {
     var canvas = document.getElementById("canvas");
@@ -17,7 +19,7 @@ function webGLStart() {
     
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
-    drawScene(vertexPositionBuffer, -0.7, 0, 1.4);
+    drawScene(vertexPositionBuffer, -0.7, 0, 2.4);
     //setInterval(function(){ drawScene(vertexPositionBuffer, -0.7, 0, zoom2); }, 16); //60 Frames per second
 }
 
@@ -40,6 +42,12 @@ function drawScene(vertexPositionBuffer, x, y, z) {
 	
 	gl.deleteBuffer(aZoomBuffer);
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    
+    currentXCenter = x;
+    currentYCenter = y;
+    currentZoom = z;
+    
+    updateCurrent();
 }
 
 function setZoom(xCenter, yCenter, zoom) {

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+	<meta charset="utf-8">
+	<!--<meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no' />-->
+	<title>Mandelbrot</title>
+	
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<script src="scripts/mandelbrot.js"></script>
+</head>
+
+<body>
+	<h1>Mandelbrot Set</h1>
+	<h3>Current</h3>
+	<div class="col-sm-6 col-md-offset-3"> 
+		<div class="col-sm-4 "><label for="currentXCenter">X-Center: </label><span id="currentXCenter"></span></div>
+		<div class="col-sm-4"><label for="currentYCenter">Y-Center: </label><span id="currentYCenter"></span></div>
+		<div class="col-sm-4"><label for="currentZoom">Zoom: </label><span id="currentZoom"></span></div>
+	</div>
+	<canvas id="canvas" width="512" height="512"></canvas></br>
+	<div class="col-sm-5 col-md-offset-2 form-inline ">
+		<label for="xCenter">X-Center: </label> <input class="form-control" id="xCenter" type="text" value="-0.5">
+		<label for="xCenter">Y-Center: </label> <input class="form-control" id="yCenter" type="text" value="0.0">
+		<label for="zoom">Zoom: &nbsp&nbsp&nbsp&nbsp</label> <input class="form-control" id="zoom" type="text" value="0.4"></br>
+		<button id="update" class="btn btn-primary">Update</button>
+	</div>
+	<div class="col-sm-3"> 
+		<div class="col-sm-12 "><label for="position">Cursor Position: </label>(<span id="cursonPosX">0</span>, <span id="cursonPosY">0</span>)</div>
+	</div>
+    
+    <p class="col-sm-12">Source: <a href="https://github.com/blomqcon/mandelbrot">GitHub</a></p>
+</body>
+</html>

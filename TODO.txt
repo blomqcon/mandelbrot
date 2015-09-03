@@ -1,5 +1,19 @@
-UI: Set iterations
-UI: Set diverge scale hue
+UI:
+	Set iterations
+	Set diverge scale hue
+	Grid on off
 
-Add: Julia set feature
-Add: Normalized iteration count algorithm 
+Add: 
+	Julia set feature
+	Normalized iteration count algorithm
+	Gaussian blur
+
+Render Options:
+	Normal / No advanced features
+	asm.js
+	simd.js
+	asm.js + simd.js
+	web workers
+	WebGL 32 bit single precision
+	WebGL 64 bit double precision
+	

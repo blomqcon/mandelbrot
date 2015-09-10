@@ -42,6 +42,7 @@ var mandelbrotAsm = (function() {
     var floor = stdlib.Math.floor;
     var ceil = stdlib.Math.ceil;
     var abs = stdlib.Math.abs;
+    var pow = stdlib.Math.pow;
     var toF = stdlib.Math.fround;
 
     var heap = new stdlib.Uint8Array(buffer);
@@ -161,30 +162,37 @@ var mandelbrotAsm = (function() {
       
       var z_a = 0.0;
       var z_b = 0.0;
-      var z_a_temp = 0.0;
-      var z_b_temp = 0.0;
+      var z_a_sqr = 0.0;
+      var z_b_sqr = 0.0;
       
-      var divergeScale = 0.0;
       var diverge = 0;
       var i = 0;
+      
       
       //High diverge value - diverges slowly
       //Low  diverge value - diverges quickly
       for (i = 0; (i | 0) < (1000 | 0); i = (i + 1) | 0) {
-            z_a_temp = +z_a;
-            z_b_temp = +z_b;
-            z_a = +((z_a_temp * z_a_temp) - (z_b_temp * z_b_temp) + c_a);
-            z_b = +((2.0 * (z_a_temp * z_b_temp)) + c_b);
-            if(+((z_a * z_a) + (z_b * z_b)) > 5.0) {
+            /*if(z_b_sqr + z_a_sqr > 4.0) {
               diverge = i|0;
               break;
             }
+            z_a = +(pow(z_a + z_b, 2) - z_b_sqr - z_a_sqr);
+            z_a = z_a + c_a;
+            z_b = z_b_sqr - z_a_sqr + c_b;
+            z_a_sqr = +pow(z_a, 2);
+            z_b_sqr = +pow(z_b, 2);*/
+            if(z_a_sqr + z_b_sqr > 4.0) {
+              diverge = i|0;
+              break;
+            }
+            z_b = z_a * z_b;
+            z_b = z_b + z_b;
+            z_b = z_b + c_b;
+            z_a = z_a_sqr - z_b_sqr + c_a
+            z_a_sqr = +pow(z_a, 2);
+            z_b_sqr = +pow(z_b, 2);     
       }
-      if((diverge|0) == 0) {
-        return 0;
-      } else {
-        return diverge|0;
-      }
+      return diverge|0;
     }
     
     function hsvToRGBInBuffer(h, s, v, index) {

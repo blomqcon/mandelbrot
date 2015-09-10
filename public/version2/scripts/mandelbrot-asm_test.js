@@ -1,48 +1,9 @@
-var global = this;
-
-var mandelbrotAsm = (function() {
-  var canvas;
-  var width;
-  var height;
-  var context2D;
-  var imageData;
-  var buffer;
-  var data;
-  
-  function init(c) {
-    canvas = c; 
-    width = canvas.width;
-    height = canvas.height;
-    context2D = canvas.getContext('2d');
-    context2D.clearRect(0, 0, width, height);
-    imageData = context2D.createImageData(width, height);
-    buffer = new ArrayBuffer(16 * 1024 * 1024);
-    data = new Uint8ClampedArray(buffer);
-  }
-  
-  
-  function draw(xCenter, yCenter, zoom) {  
-    var m = asmPixelGenerator(global, {}, buffer);
-    
-    m.generateMandelbrot(width, height, xCenter, yCenter, zoom, 500);
-    //console.log(m.calulatePixelHue(-1.0, 0.5));
-    //for(var i = 0; i < 512*512*4; i++) {
-    for(var i = 0; i < 512*512*4; i++) {
-      imageData.data[i] = data[i];
-      //console.log(data[i]);
-    }
-    
-    context2D.putImageData(imageData, 0, 0);
-  }
-  
-  
-  function asmPixelGenerator(stdlib, foreign, buffer) {
+function asmPixelGenerator(stdlib, foreign, buffer) {
     "use asm";
 
     var floor = stdlib.Math.floor;
     var ceil = stdlib.Math.ceil;
     var abs = stdlib.Math.abs;
-    var toF = stdlib.Math.fround;
 
     var heap = new stdlib.Uint8Array(buffer);
 
@@ -67,9 +28,6 @@ var mandelbrotAsm = (function() {
       var xPx = 0.0;
       var yPx = 0.0;
       var hue = 0.0;
-      var divergeNum = 0;
-      var rgb = 0;
-      var r = 0, g = 0, b = 0;
       
       width = w | 0;
       height = h | 0;
@@ -85,20 +43,7 @@ var mandelbrotAsm = (function() {
           yPx = +getPixelCord(y, height, yCenter, -ASPECT_RATIO);
           hue = +calulatePixelHue(xPx, yPx);
           
-          divergeNum = calulateDivergeNum(xPx, yPx) | 0;
-          //rgb = ~~(toF(toF(toF(toF(divergeNum >>> 0) * +(0xffff)) / +(1000 >>> 0)) * +(0xff)));
-          //rgb = ~~toF(toF(toF(toF(divergeNum >>> 0) * toF(0xa0fff)) / toF(1000 >>> 0)) * toF(0xffa));
-          rgb = ~~toF(toF(toF(toF(divergeNum >>> 0) * toF(0xaffff)) / toF(1000 >>> 0)) * toF(0xfff));
-          //rgb = (+(+(+(+(divergeNum) * +(0xffffff)) / +(1000)) * +(0xfff)));
-          r = rgb & 0xff;
-          g = (rgb >>> 8) & 0xff;
-          b = (rgb >>> 16) & 0xff;
-          heap[(dataIndex + 0) << 0 >> 0] = r;
-          heap[(dataIndex) << 0 >> 0] = g;
-          heap[(dataIndex + 2) << 0 >> 0] = b;
-          heap[(dataIndex + 3) << 0 >> 0] = (255);
-          
-          //hsvToRGBInBuffer(+(hue), 1.0, 0.9, (dataIndex|0));
+          hsvToRGBInBuffer(+(hue), 1.0, 0.9, (dataIndex|0));
           dataIndex = (dataIndex + 4) | 0;
         }
       }
@@ -142,7 +87,7 @@ var mandelbrotAsm = (function() {
             z_b_temp = +z_b;
             z_a = +((z_a_temp * z_a_temp) - (z_b_temp * z_b_temp) + c_a);
             z_b = +((2.0 * (z_a_temp * z_b_temp)) + c_b);
-            if(+((z_a * z_a) + (z_b * z_b)) > 5.0) {
+            if(+((z_a * z_a) + (z_b * z_b)) > 500.0) {
               diverge = i|0;
               break;
             }
@@ -152,38 +97,6 @@ var mandelbrotAsm = (function() {
       } else {
         divergeScale = +(1.0 - ((+(diverge|0)) / 800.0));
         return +(+divergeScale / 0.05);
-      }
-    }
-    
-    function calulateDivergeNum(c_a, c_b) {
-      c_a = +c_a;
-      c_b = +c_b;
-      
-      var z_a = 0.0;
-      var z_b = 0.0;
-      var z_a_temp = 0.0;
-      var z_b_temp = 0.0;
-      
-      var divergeScale = 0.0;
-      var diverge = 0;
-      var i = 0;
-      
-      //High diverge value - diverges slowly
-      //Low  diverge value - diverges quickly
-      for (i = 0; (i | 0) < (1000 | 0); i = (i + 1) | 0) {
-            z_a_temp = +z_a;
-            z_b_temp = +z_b;
-            z_a = +((z_a_temp * z_a_temp) - (z_b_temp * z_b_temp) + c_a);
-            z_b = +((2.0 * (z_a_temp * z_b_temp)) + c_b);
-            if(+((z_a * z_a) + (z_b * z_b)) > 5.0) {
-              diverge = i|0;
-              break;
-            }
-      }
-      if((diverge|0) == 0) {
-        return 0;
-      } else {
-        return diverge|0;
       }
     }
     
@@ -225,12 +138,3 @@ var mandelbrotAsm = (function() {
 
     return { generateMandelbrot: generateMandelbrot};
   }
-  
-  
-  
-  return {
-    init: init,
-    draw: draw
-  };
-})();
-        

@@ -9,6 +9,7 @@ var mandelbrotNormal = (function() {
     var data = imageData.data;
     
     var dataIndex = 0;
+    //console.log(calulatePixel(-1.0, 0.5));
     for(var y = 0; y < height; y++) {
       for(var x = 0; x < width; x++) {
         var px = getPixel(x, y, width, height, xCenter, yCenter, zoom);

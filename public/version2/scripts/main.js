@@ -3,11 +3,11 @@ var mandelbrot;
 
 window.onload = function() {
   c = document.getElementById('canvas');
-  mandelbrot = mandelbrotAsm;
+  mandelbrot = mandelbrotNormal;
   mandelbrot.init(c);
   //frame(1, 250);
   //mandelbrot.draw(-1.25066, 0.02012,  .00017);
-  mandelbrot.draw(-0.75, 0.0, 1.5);
+  mandelbrot.draw(-0.75, 0.0, 1.4);
   
   /*zoom = 0.01;
   var startNext = true;
